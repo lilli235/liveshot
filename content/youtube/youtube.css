@@ -1,0 +1,556 @@
+/**
+ * ============================================================================
+ * [라이브샷] YouTube UI 스타일시트
+ * 
+ * 치지직 확장 프로그램과 완벽하게 일치하는 폰트, 글자 크기, 여백, 아이콘 레이아웃
+ * 유튜브 전용 레드(#FF4444) 테마 적용
+ * ============================================================================
+ */
+
+/* 1. 상단 네비게이션 헤더 YouTube VS 둥근 버튼 */
+.yt-chzzk-header-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  height: 34px !important;
+  padding: 0 14px !important;
+  background: rgba(255, 68, 68, 0.12) !important;
+  border: 1px solid rgba(255, 68, 68, 0.4) !important;
+  border-radius: 18px !important;
+  color: #FFFFFF !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  margin-right: 8px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif !important;
+  transition: all 0.18s ease !important;
+  user-select: none !important;
+  box-sizing: border-box !important;
+  letter-spacing: -0.2px !important;
+}
+
+.yt-chzzk-header-btn:hover {
+  background: rgba(255, 68, 68, 0.22) !important;
+  border-color: #FF4444 !important;
+  box-shadow: 0 0 14px rgba(255, 68, 68, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+.yt-chzzk-header-btn.active {
+  background: rgba(255, 68, 68, 0.25) !important;
+  border-color: #FF4444 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 12px rgba(255, 68, 68, 0.35) !important;
+}
+
+/* 2. 상단 헤더 툴킷 드롭다운 메뉴 (치지직 규격과 100% 일치) */
+.yt-chzzk-menu-dropdown {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  width: 270px !important;
+  background: rgba(20, 21, 23, 0.96) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 68, 68, 0.15) !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  z-index: 2147483647 !important;
+  display: none !important;
+  flex-direction: column !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif !important;
+  animation: ytMenuDropIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  box-sizing: border-box !important;
+}
+
+.yt-chzzk-menu-dropdown.show {
+  display: flex !important;
+}
+
+@keyframes ytMenuDropIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.yt-chzzk-header-panel-head {
+  padding: 13px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.yt-chzzk-header-panel-title {
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  letter-spacing: -0.2px !important;
+}
+
+.yt-chzzk-header-panel-badge {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 2px 8px !important;
+  border-radius: 6px !important;
+  background: rgba(255, 68, 68, 0.15) !important;
+  color: #FF4444 !important;
+  border: 1px solid rgba(255, 68, 68, 0.3) !important;
+  text-transform: uppercase !important;
+}
+
+.yt-chzzk-header-panel-body {
+  padding: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+}
+
+.yt-chzzk-menu-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 10px 14px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  color: #E6E8EC !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  transition: all 0.15s ease !important;
+  font-family: inherit !important;
+  box-sizing: border-box !important;
+}
+
+.yt-chzzk-menu-item:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.yt-chzzk-menu-item:active {
+  background: rgba(255, 68, 68, 0.12) !important;
+  color: #FF4444 !important;
+}
+
+.yt-chzzk-menu-item-icon {
+  font-size: 16px !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+.yt-chzzk-menu-item-text {
+  flex: 1 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 13.5px !important;
+}
+
+/* 3. 유튜브 영상 하단 액션바(좋아요/공유 옆) 중계글 작성 버튼 */
+.yt-chzzk-action-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 36px !important;
+  padding: 0 14px !important;
+  background: rgba(255, 68, 68, 0.12) !important;
+  border: 1px solid rgba(255, 68, 68, 0.35) !important;
+  border-radius: 18px !important;
+  color: #FFFFFF !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  margin-left: 8px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif !important;
+  transition: all 0.18s ease !important;
+  user-select: none !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.yt-chzzk-action-btn:hover {
+  background: rgba(255, 68, 68, 0.25) !important;
+  border-color: #FF4444 !important;
+  box-shadow: 0 0 12px rgba(255, 68, 68, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 4. 유튜브 플레이어 컨트롤 바 캡처 버튼 */
+.ytp-chzzk-capture-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  opacity: 0.85 !important;
+  transition: opacity 0.15s ease, transform 0.15s ease !important;
+  vertical-align: middle !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.ytp-chzzk-capture-btn:hover {
+  opacity: 1 !important;
+  transform: scale(1.1) !important;
+}
+
+.ytp-chzzk-capture-btn svg {
+  width: 22px !important;
+  height: 22px !important;
+  fill: #FFFFFF !important;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.5)) !important;
+}
+
+/* 5. 디시인사이드 중계글 작성 모달 오버레이 */
+.yt-draft-modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 2147483647 !important;
+  display: flex !important;
+  align-items: initial !important;
+  justify-content: initial !important;
+  pointer-events: none !important;
+  animation: ytDraftFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif !important;
+}
+
+@keyframes ytDraftFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 모달 본체 (치지직 .chzzk-tk-modal 규격 완벽 일치) */
+.yt-draft-modal {
+  position: fixed !important;
+  top: 72px !important;
+  right: 18px !important;
+  width: 560px !important;
+  max-width: calc(100vw - 36px) !important;
+  max-height: calc(100vh - 90px) !important;
+  background: rgba(20, 21, 23, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 25px rgba(255, 68, 68, 0.2) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  color: #F3F4F6 !important;
+  font-family: inherit !important;
+  animation: ytDraftSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  box-sizing: border-box !important;
+  pointer-events: auto !important;
+  resize: both !important;
+}
+
+@keyframes ytDraftSlideUp {
+  from { transform: translateY(16px) scale(0.98); }
+  to { transform: translateY(0) scale(1); }
+}
+
+/* 모달 헤더 */
+.yt-draft-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 16px 20px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  cursor: move !important;
+  user-select: none !important;
+  touch-action: none !important;
+}
+
+.yt-draft-title-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.yt-draft-title {
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  letter-spacing: -0.2px !important;
+}
+
+.yt-draft-badge {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  padding: 2px 7px !important;
+  border-radius: 4px !important;
+  background: rgba(255, 68, 68, 0.15) !important;
+  color: #FF4444 !important;
+  border: 1px solid rgba(255, 68, 68, 0.3) !important;
+  min-height: 28px !important;
+  max-width: 230px !important;
+  background: #4a1115 !important;
+  color: #fff !important;
+  border-color: #ff5a63 !important;
+  cursor: pointer !important;
+  box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.15) !important;
+}
+.yt-draft-badge:hover,.yt-draft-badge:focus{background:#651820!important;box-shadow:0 0 0 3px rgba(255,68,68,.25)!important}.yt-draft-badge option{background:#171a1f;color:#fff}
+
+.yt-draft-close {
+  background: transparent !important;
+  border: none !important;
+  color: #9CA3AF !important;
+  font-size: 22px !important;
+  cursor: pointer !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  line-height: 1 !important;
+  transition: all 0.15s ease !important;
+}
+
+.yt-draft-close:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+}
+
+/* 모달 바디 */
+.yt-draft-body {
+  padding: 18px 20px !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  box-sizing: border-box !important;
+}
+
+/* 캡처 이미지 카드 프리뷰 */
+.yt-draft-preview-wrap {
+  position: relative !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: #000000 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+.yt-draft-preview-img {
+  display: block !important;
+  width: 100% !important;
+  max-height: 220px !important;
+  object-fit: contain !important;
+  background: #000000 !important;
+}
+
+.yt-draft-capture-timeline{display:flex!important;align-items:center!important;gap:9px!important;padding:5px 10px!important;background:#17191e!important;border-top:1px solid rgba(255,255,255,.08)!important}.yt-draft-capture-timeline[hidden]{display:none!important}.yt-draft-capture-timeline input{flex:1!important;height:4px!important;accent-color:#7f8cff!important;cursor:pointer!important}.yt-draft-capture-timeline span{min-width:48px!important;color:#b8bec9!important;font-size:10px!important;text-align:right!important}
+
+.yt-draft-thumb-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 8px 12px !important;
+  background: rgba(15, 16, 18, 0.9) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.yt-draft-res {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  color: #9CA3AF !important;
+}
+
+.yt-draft-thumb-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.yt-draft-mini-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 5px !important;
+  color: #E5E7EB !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  padding: 4px 9px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  font-family: inherit !important;
+}
+
+.yt-draft-mini-btn:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #FFFFFF !important;
+}
+.yt-draft-mini-btn:disabled{opacity:.45!important;cursor:not-allowed!important;filter:none!important}
+
+/* 폼 그룹 및 레이블 */
+.yt-draft-form-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.yt-draft-field-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.yt-draft-form-label {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #E6E8EC !important;
+  letter-spacing: -0.1px !important;
+}
+
+.yt-draft-field-btn {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 4px !important;
+  color: #9CA3AF !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 2px 7px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  font-family: inherit !important;
+}
+
+.yt-draft-field-btn:hover {
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.yt-draft-input,
+.yt-draft-select,
+.yt-draft-textarea {
+  width: 100% !important;
+  padding: 10px 13px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+  color: #FFFFFF !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  font-family: inherit !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.yt-draft-input:focus,
+.yt-draft-select:focus,
+.yt-draft-textarea:focus {
+  border-color: #FF4444 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.25) !important;
+}
+
+.yt-draft-select option {
+  background: #1F1F1F !important;
+  color: #FFFFFF !important;
+  padding: 8px 12px !important;
+}
+
+.yt-draft-textarea {
+  min-height: 140px !important;
+  resize: vertical !important;
+  line-height: 1.55 !important;
+  font-size: 13.5px !important;
+}
+
+/* 모달 푸터 */
+.yt-draft-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 14px 20px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.yt-draft-btn-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.yt-draft-btn {
+  padding: 9px 16px !important;
+  border-radius: 8px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  transition: all 0.15s ease !important;
+  border: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  box-sizing: border-box !important;
+}
+
+.yt-draft-btn-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #D1D5DB !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.yt-draft-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #FFFFFF !important;
+}
+
+.yt-draft-btn-primary {
+  background: #FF4444 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(255, 68, 68, 0.35) !important;
+}
+
+.yt-draft-btn-primary:hover {
+  background: #FF2222 !important;
+  box-shadow: 0 6px 18px rgba(255, 68, 68, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Match the CHZZK draft layout; retain YouTube's existing color palette. */
+.yt-draft-header,
+.yt-draft-footer { padding: 14px 18px !important; }
+.yt-draft-title { font-size: 15px !important; font-weight: 800 !important; letter-spacing: normal !important; }
+.yt-draft-badge { padding: 4px 9px !important; font-size: 12px !important; font-weight: 800 !important; }
+.yt-draft-body { display: block !important; }
+.yt-draft-preview-wrap { padding: 10px !important; border-radius: 10px !important; }
+.yt-draft-preview-img { max-height: 230px !important; border-radius: 7px !important; }
+.yt-draft-capture-timeline { gap: 8px !important; margin-top: 7px !important; padding: 0 !important; border-top: 0 !important; }
+.yt-draft-capture-timeline span { min-width: 58px !important; font-size: 11px !important; }
+.yt-draft-thumb-bar { margin-top: 9px !important; padding: 0 !important; border-top: 0 !important; gap: 8px !important; }
+.yt-draft-res { font-size: 11px !important; font-weight: 400 !important; }
+.yt-draft-thumb-actions { gap: 8px !important; }
+.yt-draft-mini-btn,
+.yt-draft-field-btn { display: inline-flex !important; align-items: center !important; justify-content: center !important; box-sizing: border-box !important; border-radius: 8px !important; padding: 6px 9px !important; font-size: 12px !important; font-weight: 700 !important; }
+.yt-draft-form-group { display: block !important; margin-top: 16px !important; }
+.yt-draft-field-head { gap: 8px !important; margin-bottom: 6px !important; }
+.yt-draft-form-label { letter-spacing: normal !important; }
+.yt-draft-input,
+.yt-draft-select,
+.yt-draft-textarea { padding: 10px 12px !important; font-size: 14px !important; font-weight: 400 !important; }
+.yt-draft-textarea { min-height: 120px !important; }
+#yt-body-composer > .yt-draft-textarea { border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+.yt-draft-btn { padding: 9px 13px !important; font-size: 13px !important; border-width: 1px !important; border-style: solid !important; }
+.yt-draft-btn-primary { border-color: #FF4444 !important; }
+.yt-draft-btn-primary:hover { transform: none !important; }
+@media (max-width: 700px) {
+  .yt-draft-modal { top: 56px !important; right: 8px !important; max-width: calc(100vw - 16px) !important; max-height: calc(100vh - 64px) !important; }
+}

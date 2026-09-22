@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>라이브샷 설정</title><link rel="stylesheet" href="popup.css"></head>
+<body><main>
+  <header><img src="../icons/icon-48.png" alt=""><div><h1>라이브샷</h1><p>라이브 캡처 · 중계글 작성 설정</p></div></header>
+  <section><h2>상단 버튼</h2><label class="toggle"><span>Chzzk</span><input id="show-chzzk" type="checkbox"></label><label class="toggle"><span>YouTube</span><input id="show-youtube" type="checkbox"></label></section>
+  <section><div class="section-head"><h2>갤러리 관리</h2><span id="count"></span></div><div class="add"><input id="url" placeholder="디시인사이드 갤러리 링크"><button id="add">등록</button></div><details class="management-list"><summary>등록된 갤러리</summary><div id="list"></div></details></section>
+  <section class="dccon-vault"><div class="section-head"><h2>디시콘 보관함</h2><span id="dccon-count"></span></div><div class="folder-add"><input id="dccon-folder-name" placeholder="새 폴더"><button id="dccon-folder-add">추가</button></div><div id="dccon-folders"></div><details class="dccon-register"><summary>＋ 디시콘 등록</summary><div class="dccon-add"><textarea id="dccon-html" placeholder="디시콘 HTML 여러 개 또는 폴더 등록 코드 붙여넣기"></textarea><select id="dccon-folder"></select><button id="dccon-add">일괄 등록</button><button type="button" id="dccon-preview-batch">미리보기 폴더 등록</button><input id="dccon-preview-files" type="file" accept="image/*" multiple webkitdirectory hidden></div></details><details class="management-list dccon-folder-list"><summary>폴더 목록</summary><div id="dccon-list"></div></details></section>
+  <div id="toast"></div>
+</main><script src="popup.js"></script></body></html>

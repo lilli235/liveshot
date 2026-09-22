@@ -1,0 +1,107 @@
+{
+  "manifest_version": 3,
+  "name": "라이브샷",
+  "version": "1.0.0",
+  "description": "중계도우미",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    },
+    "default_title": "라이브샷"
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "scripting",
+    "activeTab",
+    "clipboardRead",
+    "clipboardWrite",
+    "offscreen"
+  ],
+  "host_permissions": [
+    "*://chzzk.naver.com/*",
+    "*://*.youtube.com/*",
+    "*://youtube.com/*",
+    "*://gall.dcinside.com/*",
+    "*://*.dcinside.com/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; object-src 'self';"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "vendor/mp4box/*.mjs",
+        "vendor/wasm-webp/index.js",
+        "vendor/wasm-webp/encoder-host.html",
+        "vendor/wasm-webp/encoder-host.js",
+        "vendor/wasm-webp/encoder-worker.js",
+        "vendor/wasm-webp/webp-wasm.js",
+        "vendor/wasm-webp/webp-wasm.wasm",
+        "vendor/onnxruntime/ort-wasm-simd-threaded.mjs",
+        "vendor/onnxruntime/ort-wasm-simd-threaded.wasm",
+        "vendor/ai-runtime/ai-host.html",
+        "vendor/ai-runtime/ai-host.js",
+        "vendor/ai-runtime/ai-worker.js",
+        "vendor/ai-models/birefnet-lite-compatible.onnx",
+        "vendor/ai-models/inpainting-lama.onnx"
+      ],
+      "matches": ["*://chzzk.naver.com/*", "*://*.youtube.com/*", "*://youtube.com/*"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*", "*://youtube.com/*"],
+      "js": ["content/youtube/player-state-main.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://chzzk.naver.com/*"
+      ],
+      "js": [
+        "content/chzzk/features/live-stream.js",
+        "content/chzzk/features/player-diagnostics.js",
+        "vendor/onnxruntime/ort.wasm.min.js",
+        "content/chzzk/core/utils.js",
+        "content/chzzk/features/animated-cutout.js",
+        "content/chzzk/features/gallery-draft.js",
+        "content/chzzk/ui/header-menu.js",
+        "content/chzzk/chzzk.js"
+      ],
+      "css": [
+        "content/chzzk/chzzk.css"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://*.youtube.com/*", "*://youtube.com/*"],
+      "js": ["vendor/onnxruntime/ort.wasm.min.js", "content/chzzk/core/utils.js", "content/chzzk/features/animated-cutout.js", "content/chzzk/features/gallery-draft.js", "content/youtube/youtube.js"],
+      "css": ["content/chzzk/chzzk.css", "content/youtube/youtube.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://gall.dcinside.com/*",
+        "*://*.dcinside.com/*"
+      ],
+      "js": [
+        "content/dcinside/dc-autofill.js"
+      ],
+      "run_at": "document_end"
+    }
+  ]
+}
