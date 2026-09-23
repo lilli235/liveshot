@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "라이브샷",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "중계도우미",
   "icons": {
     "16": "icons/icon-16.png",

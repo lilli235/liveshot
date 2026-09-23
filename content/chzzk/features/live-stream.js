@@ -117,11 +117,16 @@
       if(failure)throw failure;
     }finally{signal.removeEventListener('abort',abort);stopped=true;done=true;drain?.();if(decoder.state!=='closed')decoder.close();queue.forEach(f=>f.close());queue.length=0;await producer;}
   }
+  api.captureSnapshot = () => {
+    const capturedAt = Date.now();
+    const freeze = () => ({entries:entries.filter(e=>e.start<capturedAt).map(e=>({...e})),track:{...track},capturedAt});
+    return entries.length ? Promise.resolve(freeze()) : refresh().then(freeze).catch(()=>({entries:[],track:{...track},capturedAt}));
+  };
   api.open = async snapshot => {
     if(typeof VideoDecoder === 'undefined')throw new Error('이 브라우저는 라이브 프레임 추출을 지원하지 않습니다.');
     if(!snapshot){await refresh();snapshot={entries:entries.map(e=>({...e})),track:{...track}};}
     if(!snapshot.entries?.length)throw new Error('라이브 구간을 준비 중입니다. 잠시 후 다시 눌러 주세요.');
-    const segments=snapshot.entries, end=segments.at(-1).end, start=Math.max(segments[0].start,end-90000);
+    const segments=snapshot.entries, end=Math.min(segments.at(-1).end,snapshot.capturedAt || Infinity), start=Math.max(segments[0].start,end-90000);
     if(!retainedVideo.has(snapshot))retainedVideo.set(snapshot,new Map());
     const retained=retainedVideo.get(snapshot);
     const controller=new AbortController(); let previews=Promise.resolve();

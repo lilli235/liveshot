@@ -1098,7 +1098,7 @@ window.ChzzkVS = window.ChzzkVS || {};
     let serverLive = null;
     const settingsKey = `chzzkWebpEditorSettings:${isYouTubeSource ? 'youtube' : isLiveSource ? 'live' : isReplaySource ? 'replay' : 'clip'}`;
     if (isLiveSource && !isYouTubeSource && globalThis.LiveShotLiveStream) {
-      try { serverLive = await globalThis.LiveShotLiveStream.open((options.initialSettings || webpEditorSessionSettings.get(settingsKey))?.liveSnapshot); }
+      try { serverLive = await globalThis.LiveShotLiveStream.open((options.initialSettings || webpEditorSessionSettings.get(settingsKey))?.liveSnapshot || await options.liveSnapshot); }
       catch (error) {
         showToast(`독립 라이브 영상 준비 실패: ${error.message} · 시청 중인 플레이어는 변경하지 않습니다.`); return;
       }
@@ -2200,6 +2200,8 @@ window.ChzzkVS = window.ChzzkVS || {};
     let modalOverlay = document.getElementById('chzzk-toolkit-gallery-modal');
     if (modalOverlay) modalOverlay.remove();
     webpEditorSessionSettings.clear();
+    const draftId = crypto.randomUUID(); const draftKey = 'liveshot_draft_' + draftId;
+    const draftLiveSnapshot = globalThis.LiveShotLiveStream?.captureSnapshot?.();
     const webpCaptureAnchorTime = pageVideo?.currentTime;
     const webpCaptureFrames = rollingFrameCache.snapshot();
 
@@ -2423,11 +2425,13 @@ window.ChzzkVS = window.ChzzkVS || {};
     `;
 
     const syncDraftToStorage = async (imgUrl, includeMedia = false) => {
+      if (!includeMedia) return;
+      const { insertHyperlink = true } = await chrome.storage.sync.get('insertHyperlink');
       try {
         if (!chrome?.storage?.local?.set) return;
         const finalImgUrl = (imgUrl !== undefined) ? imgUrl : hostedImageUrl;
         await chrome.storage.local.set({
-          chzzk_gallery_draft: {
+          [draftKey]: { insertHyperlink,
             title: titleInput.value.trim(),
             cardTitle: meta.liveTitle,
             body: bodyTextarea.value.trim(),
@@ -2634,7 +2638,7 @@ window.ChzzkVS = window.ChzzkVS || {};
       };
       try {
         if (isLivePage) {
-          liveStill = await globalThis.LiveShotLiveStream.open();
+          liveStill = await globalThis.LiveShotLiveStream.open(await draftLiveSnapshot);
           if (liveStill) { sourceEnd = liveStill.end / 1000; sourceStart = sourceEnd - liveStill.available; }
         } else if (isClipPage) {
           rollingFrameCache.ensure(); frames = rollingFrameCache.stillSnapshot();
@@ -2919,7 +2923,7 @@ window.ChzzkVS = window.ChzzkVS || {};
         const opening = openAnimatedWebpEditor(async result => {
           if (result.webpEditorSettings) fixedWebpSettings = { ...result.webpEditorSettings, crop: { ...result.webpEditorSettings.crop } };
           hasAnimatedResult = true; editWebpBtn.title = '만든 움짤의 구간과 화면을 다시 편집'; await applyEditedResult(result);
-        }, { captureAnchorTime: webpCaptureAnchorTime, cachedFrames: webpCaptureFrames, sourcePlatform: 'chzzk', sourceKind, draftPreviewAnimated: Boolean(captureResult?.animated), settingsMode: editingExisting ? 'edit' : 'make', returnToMake: fromMake, editResult: editingExisting ? captureResult : null, initialSettings: editingExisting || fromMake ? fixedWebpSettings : null, onEditRequested: settings => { fixedWebpSettings = { ...settings, crop: { ...settings.crop } }; setTimeout(() => openWebpEditor(true, true), 0); }, onBackRequested: () => setTimeout(() => openWebpEditor(false, true), 0), onSettingsSaved: (settings, reason) => { if (reason === 'generated') { fixedWebpSettings = settings; if (captureResult?.animated) captureResult.webpEditorSettings = settings; } } });
+        }, { liveSnapshot: draftLiveSnapshot, captureAnchorTime: webpCaptureAnchorTime, cachedFrames: webpCaptureFrames, sourcePlatform: 'chzzk', sourceKind, draftPreviewAnimated: Boolean(captureResult?.animated), settingsMode: editingExisting ? 'edit' : 'make', returnToMake: fromMake, editResult: editingExisting ? captureResult : null, initialSettings: editingExisting || fromMake ? fixedWebpSettings : null, onEditRequested: settings => { fixedWebpSettings = { ...settings, crop: { ...settings.crop } }; setTimeout(() => openWebpEditor(true, true), 0); }, onBackRequested: () => setTimeout(() => openWebpEditor(false, true), 0), onSettingsSaved: (settings, reason) => { if (reason === 'generated') { fixedWebpSettings = settings; if (captureResult?.animated) captureResult.webpEditorSettings = settings; } } });
         Promise.resolve(opening).then(() => { if (!document.getElementById('chzzk-webp-editor')) captureBar?.style.removeProperty('display'); }).finally(() => { webpEditorOpenPending = false; });
         return opening;
       };
@@ -2957,7 +2961,7 @@ window.ChzzkVS = window.ChzzkVS || {};
       openGalleryBtn.classList.add('is-loading');
       openGalleryBtn.textContent = '준비 중...';
       await syncDraftToStorage(null, true);
-      chrome.runtime.sendMessage({ type: 'OPEN_URL', url: getWriteUrl(currentSelectedUrl), popup: true });
+      chrome.runtime.sendMessage({ type: 'OPEN_URL', url: getWriteUrl(currentSelectedUrl) + '&draftId=' + draftId, popup: true });
       modalOverlay.dataset.pendingPost = '1';
       modalOverlay.style.setProperty('display', 'none', 'important');
     });
@@ -2986,7 +2990,7 @@ window.ChzzkVS = window.ChzzkVS || {};
     const closeModal = (isCancel = true) => {
       releaseStillTimeline();
       if (isCancel) {
-        chrome.storage?.local?.remove('chzzk_gallery_draft');
+        chrome.storage?.local?.remove(draftKey);
       }
       modalOverlay.remove();
     };
@@ -3055,8 +3059,10 @@ globalThis.liveShotMediaShelf = {
     await chrome.storage.local.remove('liveShotMediaShelf');return index;
   },
   async urls(current) {
-    const urls=[],ids=[];for(const item of await this.read()){
-      const key='liveShotMedia:'+item.id,record=(await chrome.storage.local.get(key))[key];
+    const items=await this.read();
+    const records=items.length?await chrome.storage.local.get(items.map(item=>'liveShotMedia:'+item.id)):{};
+    const urls=[],ids=[];for(const item of items){
+      const record=records['liveShotMedia:'+item.id];
       if(record?.dataUrl){urls.push(record.dataUrl);ids.push(item.id);}
     }
     if(current)current.shelfSubmissionIds=ids;
@@ -3084,7 +3090,64 @@ globalThis.liveShotMediaShelf = {
     panel.style.width='100%';panel.style.boxSizing='border-box';panel.style.minWidth='0';
     const list=document.createElement('div');list.className='liveshot-media-shelf-list';list.style.cssText='display:flex;flex-wrap:nowrap;gap:8px;width:100%;max-width:100%;overflow-x:auto;min-width:0;touch-action:pan-y;cursor:grab';
     let scrollDrag=null,suppressClickUntil=0;
-    list.addEventListener('pointerdown',event=>{if(event.button!==0)return;scrollDrag={id:event.pointerId,x:event.clientX,left:list.scrollLeft,moved:false};});
+    list.addEventListener('pointerdown',event=>{if(event.button!==0||event.target.closest('[data-media-id]'))return;scrollDrag={id:event.pointerId,x:event.clientX,left:list.scrollLeft,moved:false};});
+    let wheelFrame=0,wheelTarget=0,wheelTime=0;
+    const stopWheel=()=>{
+      if(wheelFrame)cancelAnimationFrame(wheelFrame);
+      wheelFrame=0;wheelTime=0;wheelTarget=list.scrollLeft;
+    };
+    const animateWheel=time=>{
+      if(!list.isConnected){stopWheel();return;}
+      wheelTarget=Math.max(0,Math.min(list.scrollWidth-list.clientWidth,wheelTarget));
+      const elapsed=wheelTime?Math.min(64,time-wheelTime):16;wheelTime=time;
+      const distance=wheelTarget-list.scrollLeft;
+      if(Math.abs(distance)<0.5){list.scrollLeft=wheelTarget;wheelFrame=0;wheelTime=0;return;}
+      list.scrollLeft+=distance*(1-Math.exp(-elapsed/65));
+      wheelFrame=requestAnimationFrame(animateWheel);
+    };
+    list.addEventListener('wheel',event=>{
+      if(event.ctrlKey||list.scrollWidth<=list.clientWidth)return;
+      event.preventDefault();
+      const unit=event.deltaMode===1?16:event.deltaMode===2?list.clientWidth:1;
+      if(!wheelFrame)wheelTarget=list.scrollLeft;
+      wheelTarget=Math.max(0,Math.min(list.scrollWidth-list.clientWidth,wheelTarget+(event.deltaX||event.deltaY)*unit));
+      if(!wheelFrame)wheelFrame=requestAnimationFrame(animateWheel);
+    },{passive:false});
+    list.addEventListener('pointerdown',stopWheel);
+    let draggedId=null;
+    list.addEventListener('dragstart',event=>{
+      stopWheel();
+      const card=event.target.closest('[data-media-id]');if(!card)return;
+      draggedId=card.dataset.mediaId;event.dataTransfer.effectAllowed='move';
+      event.dataTransfer.setData('text/plain',draggedId);card.style.opacity='0.45';scrollDrag=null;
+    });
+    list.addEventListener('dragover',event=>{
+      if(!draggedId)return;event.preventDefault();event.dataTransfer.dropEffect='move';
+      const bounds=list.getBoundingClientRect();
+      if(event.clientX<bounds.left+30)list.scrollLeft-=20;
+      if(event.clientX>bounds.right-30)list.scrollLeft+=20;
+      const target=event.target.closest('[data-media-id]');
+      const moving=Array.from(list.children).find(card=>card.dataset.mediaId===draggedId);
+      if(!target||!moving||target===moving)return;
+      const rect=target.getBoundingClientRect();
+      list.insertBefore(moving,event.clientX<rect.left+rect.width/2?target:target.nextSibling);
+    });
+    list.addEventListener('drop',async event=>{
+      if(!draggedId)return;event.preventDefault();
+      const order=Array.from(list.children).map(card=>card.dataset.mediaId);
+      draggedId=null;suppressClickUntil=performance.now()+300;
+      try{
+        const items=await this.read(),byId=new Map(items.map(item=>[item.id,item]));
+        const sorted=order.map(id=>byId.get(id)).filter(Boolean);
+        sorted.push(...items.filter(item=>!order.includes(item.id)));
+        await chrome.storage.local.set({liveShotMediaIndex:sorted});await render();
+      }catch(error){note.textContent=error.message;await render();}
+    });
+    list.addEventListener('dragend',()=>{
+      const cancelled=Boolean(draggedId);draggedId=null;suppressClickUntil=performance.now()+300;
+      for(const card of list.children)card.style.opacity='';
+      if(cancelled)render().catch(error=>{note.textContent=error.message;});
+    });
     list.addEventListener('pointermove',event=>{if(!scrollDrag||event.pointerId!==scrollDrag.id)return;const dx=event.clientX-scrollDrag.x;if(!scrollDrag.moved&&Math.abs(dx)<6)return;scrollDrag.moved=true;list.setPointerCapture(event.pointerId);list.scrollLeft=scrollDrag.left-dx;event.preventDefault();});
     const stopScroll=()=>{if(scrollDrag?.moved)suppressClickUntil=performance.now()+300;scrollDrag=null;};
     list.addEventListener('pointerup',stopScroll);list.addEventListener('pointercancel',stopScroll);list.addEventListener('lostpointercapture',stopScroll);
@@ -3098,7 +3161,8 @@ globalThis.liveShotMediaShelf = {
       if(item.thumbnail)img.src=item.thumbnail;img.style.cssText='width:60px;height:48px;object-fit:contain';
       select.type='button';select.title='작성창에 불러오기';select.append(img);
       select.style.cssText='appearance:none;background:transparent;border:0;border-radius:6px;padding:0;cursor:pointer;line-height:0;overflow:hidden';
-      img.draggable=false;
+      img.draggable=false;card.draggable=true;card.dataset.mediaId=item.id;
+      select.title='클릭: 불러오기 · 드래그: 순서 변경';
       select.onclick=async()=>{select.disabled=true;try{
         freezePreview();
         const revision=++selectionRevision;

@@ -714,7 +714,9 @@
       }
 
       // 초안 데이터 구성 (dc-autofill.js 호환)
-      const draftPayload = {
+      const draftId = crypto.randomUUID(); writeUrl += '&draftId=' + draftId;
+      const { insertHyperlink = true } = await chrome.storage.sync.get('insertHyperlink');
+      const draftPayload = { insertHyperlink,
         platform: 'YOUTUBE',
         streamer: meta.streamer,
         liveTitle: meta.title,
@@ -736,7 +738,7 @@
         isClip: false
       };
 
-      await chrome.storage.local.set({ chzzk_gallery_draft: draftPayload });
+      await chrome.storage.local.set({ ['liveshot_draft_' + draftId]: draftPayload });
       await chrome.storage.sync.set({ selectedGalleryUrl: targetGalleryUrl });
 
       showToast('작은 디시 등록 창을 엽니다...');

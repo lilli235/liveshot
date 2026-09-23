@@ -128,11 +128,13 @@
         return;
       }
 
-      const data = await chrome.storage.local.get('chzzk_gallery_draft');
-      const draft = data.chzzk_gallery_draft;
+      const draftId = new URLSearchParams(location.hash.slice(1)).get('draftId') || new URLSearchParams(location.search).get('draftId');
+      const draftKey = draftId && /^[a-f0-9-]{36}$/i.test(draftId) ? 'liveshot_draft_' + draftId : 'chzzk_gallery_draft';
+      const data = await chrome.storage.local.get(draftKey);
+      const draft = data[draftKey];
 
       // 초안 데이터를 읽은 즉시 1회성으로 스토리지에서 삭제 (다른 창이나 중복 실행 방지)
-      chrome.storage.local.remove('chzzk_gallery_draft');
+      chrome.storage.local.remove(draftKey);
 
       // URL 주소창의 해시 마커 깔끔하게 정리
       if (window.location.hash.includes('chzzk_draft=1')) {
@@ -302,7 +304,7 @@
       const liveExtraLinkHtml = hasActiveLive
         ? `<p><a href="${escapeHtml(streamerLiveInfo.liveUrl)}" target="_blank" rel="noopener">${escapeHtml(streamerLiveInfo.liveTitle || '치지직 실시간 라이브')}</a></p>`
         : '';
-      const fullCardsHtml = `${imageHtml}${primaryLinkHtml}${liveExtraLinkHtml}${primaryLinkHtml || liveExtraLinkHtml ? '<p><br></p>' : ''}`;
+      const fullCardsHtml = draft.insertHyperlink === false ? imageHtml : `${imageHtml}${primaryLinkHtml}${liveExtraLinkHtml}${primaryLinkHtml || liveExtraLinkHtml ? '<p><br></p>' : ''}`;
       const legacyDccon = draft.dccon && typeof draft.dccon === 'object' ? draft.dccon : null;
       const savedDccons = Array.isArray(draft.dccons) ? draft.dccons : (legacyDccon ? [legacyDccon] : []);
       const dcconHtmlParts = [];
@@ -497,8 +499,34 @@
         return false;
       }
 
+      // Upload all screenshots together in the page's native uploader context,
+      // then insert by response file_temp_no in the original shelf order.
+      let screenshotUploadStarted = false;
+      async function uploadScreenshotsInOrder() {
+        if (screenshotUploadStarted) return imageDone;
+        screenshotUploadStarted = true;
+        imageAttempting = true;
+        const status = document.getElementById('chzzk-confirm-status');
+        try {
+          const urls = (draft.imageDataUrls || [draft.imageDataUrl]).filter(url => typeof url === 'string' && url.startsWith('data:image/'));
+          if (urls.length !== captureFiles.length) throw new Error('첨부 파일 목록을 확인하지 못했습니다.');
+          if (status) status.textContent = `스크린샷 ${urls.length}장 동시 업로드를 준비하고 있습니다…`;
+          const result = await chrome.runtime.sendMessage({
+            type: 'UPLOAD_SCREENSHOT_BATCH',
+            files: urls.map((dataUrl, index) => ({ dataUrl, name: captureFiles[index].name })),
+          });
+          if (!result?.ok || result.count !== captureFiles.length) throw new Error(result?.error || '스크린샷 업로드 결과를 확인하지 못했습니다.');
+          imageDone = true;
+          return true;
+        } catch (error) {
+          if (status) status.textContent = error.message;
+          return false;
+        } finally { imageAttempting = false; }
+      }
+
       async function applyImageLikeBroadcastHelper() {
         if (imageDone || !captureFile || imageAttempting) return imageDone;
+        if (captureFiles.length) return uploadScreenshotsInOrder();
         if (captureFiles.length > 1) return applyNativeImageUpload();
         imageAttempting = true;
         try {
@@ -731,7 +759,7 @@
       async function finishAndPrepareSubmit() {
         if (submitPrepared) return;
         submitPrepared = true;
-        await chrome.storage.local.remove('chzzk_gallery_draft');
+        await chrome.storage.local.remove(draftKey);
         await new Promise(resolve => setTimeout(resolve, 5000));
 
         const subject = document.querySelector('#subject, input[name="subject"], input[class*="subject"], input[placeholder*="제목"]');

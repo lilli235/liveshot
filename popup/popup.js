@@ -129,6 +129,7 @@ function render() {
   dcconFolders = Array.isArray(localSaved.dcconFolders) && localSaved.dcconFolders.length ? localSaved.dcconFolders : (Array.isArray(saved.dcconFolders) && saved.dcconFolders.length ? saved.dcconFolders : ['기본']);
   dcconFolderCovers = localSaved.dcconFolderCovers && typeof localSaved.dcconFolderCovers === 'object' ? localSaved.dcconFolderCovers : (saved.dcconFolderCovers && typeof saved.dcconFolderCovers === 'object' ? saved.dcconFolderCovers : {});
   dcconPreviewCache = localSaved.dcconPreviewCache || {};
+  $('insert-hyperlink').checked = (await chrome.storage.sync.get('insertHyperlink')).insertHyperlink !== false;
   $('show-chzzk').checked = saved.showQuickWidget;
   $('show-youtube').checked = saved.showYoutubeQuickWidget;
   render();
@@ -137,6 +138,7 @@ function render() {
   await chrome.storage.sync.remove(['dcconFavorites', 'dcconFolders', 'dcconFolderCovers']);
   await chrome.storage.sync.set({ galleryDestinations: destinations });
 })();
+$('insert-hyperlink').onchange = event => chrome.storage.sync.set({ insertHyperlink: event.target.checked });
 $('show-chzzk').onchange = event => chrome.storage.sync.set({ showQuickWidget: event.target.checked });
 $('show-youtube').onchange = event => chrome.storage.sync.set({ showYoutubeQuickWidget: event.target.checked });
 $('dccon-folder-add').onclick = async () => {

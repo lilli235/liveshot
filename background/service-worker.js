@@ -1,5 +1,6 @@
 /** Chzzk VS - 중계글 작성 전용 서비스 워커 */
 importScripts('live-stream-fetch.js');
+importScripts('screenshot-upload.js');
 const DEFAULT_DESTINATION = {
   id: 'virtual_streamer',
   name: '버츄얼 스트리머 미니 갤러리',
